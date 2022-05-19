@@ -31,7 +31,8 @@ const optArticleSelector = '.post',
   optTitleSelector = '.post-title',
   optTitleListSelector = '.titles',
   optArticleTagsSelector = '.post-tags .list',
-  optArticleAuthorSelector = '.post-author';
+  optArticleAuthorSelector = '.post-author',
+  optTagsListSelector = '.tags.list';
 
 function generateTitleLinks(customSelector = ''){
   /*[DONE] remove contents of titleList */
@@ -57,6 +58,8 @@ function generateTitleLinks(customSelector = ''){
   }
 }
 function generateTags(){
+  /* [NEW] create a new variable allTags with an empty array */
+  let allTags = [];
   /* find all articles */
   const articles = document.querySelectorAll(optArticleSelector);
   /* START LOOP: for every article: */
@@ -71,24 +74,27 @@ function generateTags(){
     const articleTagsArray = articleTags.split(' ');
     /* START LOOP: for each tag */
     for(let tag of articleTagsArray){
+    console.log('tag:', tag);
       /* generate HTML of the link */
       let LinkHTMLtag = '<li><a href="#tag-' + tag + '">' + tag + '</a></li>';
+      console.log('LinkHTMLtag:', LinkHTMLtag);
       /* add generated code to html variable */
       html = html + LinkHTMLtag;
+      console.log('html:', html);
       /* [NEW] check if this link is NOT already in allTags */
-      if(allTags.indexOf(linkHTML) == -1){
+      if(allTags.indexOf(LinkHTMLtag) == -1){
         /* [NEW] add generated code to allTags array */
-        allTags.push(linkHTML);
+        allTags.push(LinkHTMLtag);
       }
     /* END LOOP: for each tag */
     }
     /* insert HTML of all the links into the tags wrapper */
     tagsWrapper.innerHTML = html;
+    console.log('tagsWrapper:', tagsWrapper);
   /* END LOOP: for every article: */
   }
   /* [NEW] find list of tags in right column */
   const tagList = document.querySelector(optTagsListSelector);
-
   /* [NEW] add html from allTags to tagList */
   tagList.innerHTML = allTags.join(' ');
 }
@@ -198,7 +204,6 @@ function addClickListenersToAuthors(){
   }
 }
 
-}
 
 generateTitleLinks();
 generateTags();
