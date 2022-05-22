@@ -58,7 +58,7 @@ function generateTitleLinks(customSelector = ''){
   }
 }
 function generateTags(){
-  /* [NEW] create a new variable allTags with an empty array */
+  /* [NEW] create a new variable allTags with an empty array */ 
   let allTags = [];
   /* find all articles */
   const articles = document.querySelectorAll(optArticleSelector);
@@ -74,7 +74,7 @@ function generateTags(){
     const articleTagsArray = articleTags.split(' ');
     /* START LOOP: for each tag */
     for(let tag of articleTagsArray){
-    console.log('tag:', tag);
+      console.log('tag:', tag);
       /* generate HTML of the link */
       let LinkHTMLtag = '<li><a href="#tag-' + tag + '">' + tag + '</a></li>';
       console.log('LinkHTMLtag:', LinkHTMLtag);
