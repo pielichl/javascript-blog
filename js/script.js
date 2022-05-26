@@ -32,7 +32,10 @@ const optArticleSelector = '.post',
   optTitleListSelector = '.titles',
   optArticleTagsSelector = '.post-tags .list',
   optArticleAuthorSelector = '.post-author',
-  optTagsListSelector = '.tags.list';
+  optTagsListSelector = '.tags.list',
+  optCloudClassCount = '5',
+  optCloudClassPrefix = 'tag-size-';
+
 
 function generateTitleLinks(customSelector = ''){
   /*[DONE] remove contents of titleList */
@@ -57,6 +60,44 @@ function generateTitleLinks(customSelector = ''){
     link.addEventListener('click', titleClickHandler);
   }
 }
+
+function calculateTagsParams(tags){
+  /* Set const params */
+  const params = {
+    max:0,
+    min:999999,
+  };
+  /* START LOOP: for evry tag: */
+  for(let tag in tags){
+    console.log(tag + ' is used ' + tags[tag] + ' times');
+    /* Set params.max */
+    if(tags[tag] > params.max){
+      params.max = tags[tag];
+    }
+    /* set params.min */
+    if(tags[tag] < params.min){
+      params.max = tags[tag];
+    }
+  /* END LOOP: for each tag */
+  }
+  return params;
+}
+
+/* Add a function calculateTagClass */
+function calculateTagClass(count, params){
+
+  const normalizedCount = count - params.min;
+  console.log('count:', count);
+
+  const normalizedMax = params.max - params.min;
+
+  const percentage = normalizedCount / normalizedMax;
+
+  const classNumber = Math.floor( percentage * (optCloudClassCount - 1) + 1 );
+
+  return optCloudClassPrefix + classNumber;
+}
+
 function generateTags(){
   /* [NEW] create a new variable allTags with an empty array */ 
   let allTags = {};
@@ -82,7 +123,7 @@ function generateTags(){
       html = html + LinkHTMLtag;
       console.log('html:', html);
       /* [NEW] check if this link is NOT already in allTags */
-      if(!allTags.hasOwnProperty(tag)){ 
+      if(!allTags.hasOwnProperty(tag)){ /* dlaczego podkreśla błąd? */
         /* [NEW] add tag to allTags object */
         allTags[tag] = 1;
       } else {
@@ -97,13 +138,18 @@ function generateTags(){
   }
   /* [NEW] find list of tags in right column */
   const tagList = document.querySelector(optTagsListSelector);
+  /* [NEW] call a function calculateTagsParams(allTags) to find min and max use of all tags */
+  const tagsParams = calculateTagsParams(allTags);
+  console.log('tagsParams:', tagsParams);
   /* [NEW] create var for all links HTML code */
   let allTagsHTML = '';
 
   /* [NEW] START LOOP: for each tag in allTags: */
   for (let tag in allTags){
     /* [NEW generate code of a link and add it to allTagsHTML */
-    allTagsHTML += '<li><a href="#tag-' + tag + '">' + tag + ' (' + allTags[tag] + ') </a></li>';
+    const tagLinkHTML = '<li><a href="#tag-' + tag + '" class="' + calculateTagClass(allTags[tag], tagsParams) + '">' + tag + '</a></li>';
+    allTagsHTML += tagLinkHTML;
+    console.log('allTagsHTML:', allTagsHTML);
   /* [NEW] END LOOP: for each tag in allTags: */
   }
   /* [NEW] add html from allTagsHTML to tagList */
