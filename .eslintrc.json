@@ -1,5 +1,5 @@
 {
-    "env": {
+	"env": {
         "browser": true,
         "es6": true
     },
@@ -27,5 +27,8 @@
         "no-console": [
             "off"
         ]
-    }
+    },
+	"globals": {
+	  "Handlebars": false
+	}
 }
