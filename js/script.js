@@ -34,7 +34,8 @@ const optArticleSelector = '.post',
   optArticleAuthorSelector = '.post-author',
   optTagsListSelector = '.tags.list',
   optCloudClassCount = '5',
-  optCloudClassPrefix = 'tag-size-';
+  optCloudClassPrefix = 'tag-size-',
+  optAuthorsListSelector = '.authors.list';
 
 
 function generateTitleLinks(customSelector = ''){
@@ -198,25 +199,90 @@ function addClickListenersToTags(){
   }
 }
 
+function calculateAuthorsParams(authors){
+  /* Set const params */
+  const authorsParams = {
+    max: 0, 
+    min: 999999,
+  };
+  /* START LOOP: for every author: */
+  for(let author in authors){
+    console.log(author + ' is used ' + authors[author] + ' times');
+    /* Set params.max */
+    if(authors[author] > authorsParams.max){
+      authorsParams.max = authors[author];
+    }
+    /* Set params.min */
+    if(authors[author] < authorsParams.min){
+      authorsParams.max = authors[author];
+    }
+  /* END LOOP: for each author */
+  }
+  return authorsParams; 
+}
+
+/* Add z function calculateAuthorClass */
+function calculateAuthorClass(count, authorsParams){
+
+  const normalizedCount = count - authorsParams.min;
+  console.log('count:', count);
+
+  const normalizedMax = authorsParams.max - authorsParams.min;
+
+  const percentage = normalizedCount / normalizedMax;
+
+  const classNumber = Math.floor( percentage * (optCloudClassCount - 1) + 1 );
+
+  return optCloudClassPrefix + classNumber;
+}
+
 function generateAuthors(){
-/* find all articles */
+  /* Create new variable allAuthors with an empty array */
+  let allAuthors = {};
+  /* find all articles */
   const articles = document.querySelectorAll(optArticleSelector);
   /* START LOOP: for every article: */
   for(let article of articles){
-  /* find authors wrapper */
-    const authorsWrapper = article.querySelector(optArticleAuthorSelector);
+    /* find authors wrapper */
+    const authorWrapper = article.querySelector(optArticleAuthorSelector);
     /* make html variable with empty string */
     let html = '';
-    /* get authors from post-author attribute */
-    const articleAuthors = article.getAttribute('data-author');
-    /* generate HTML of the link */
-    let LinkHTMLauthor = '<li><a href="#author-' + articleAuthors + '"><span>' + articleAuthors + '</span></a></li>';
-    /* add generated code to html variable */
-    html = html + LinkHTMLauthor;
-    /* insert HTML of all the links into the authors wrapper */
-    authorsWrapper.innerHTML = html;
-  /* END LOOP: for every article: */
+    /* get authors from data-author attribute */
+    const author = article.getAttribute('data-author');
+    /* generate a link */
+    let linkHTMLAuthor = '<li><a href="#author-' + author + '">' + author + '</a></li>';
+    /* insert HTML */
+    html = html + linkHTMLAuthor;
+    /* Check if this link is NOT already in allAuthors */
+    if(!allAuthors.hasOwnProperty(author)){
+      /* Add author to allAuthors object */
+      allAuthors[author] = 1;
+    } else {
+      allAuthors[author]++;
+    }
+    /* Insert HTML of all the links into authors wrapper */
+    authorWrapper.innerHTML = html;
+    console.log('authorWrapper:', authorWrapper);
+    /* END LOOP: for every article */
   }
+  /* Find list of authors in right column */
+  const authorList = document.querySelector(optAuthorsListSelector);
+  /* call a function calculateAuthorsParams */
+  const authorsParams = calculateAuthorsParams(allAuthors);
+  console.log('authorsParams:',authorsParams);
+  /* Create variable for all links HTML code */
+  let allAuthorsHTML = '';
+
+  /* START LOOP: for each author in allAuthors */
+  for (let author in allAuthors){
+    /* generate HTML and add to allAuthorsHTML */
+    const linkAuthorsHTML = '<li><a href="#author-' + author + '" class="' + calculateAuthorClass(allAuthors[author], authorsParams) + '">' + author + '</a></li>';
+    allAuthorsHTML += linkAuthorsHTML;
+    console.log('allAuthorsHTML;', allAuthorsHTML);
+    /* END LOOP: for each author in allAuthors: */
+  }
+  /* add html from allAuthorsHTML to authorList */
+  authorList.innerHTML = allAuthorsHTML;
 }
 
 function AuthorClickHandler(event){
